@@ -16,6 +16,7 @@ let recording = false;
 let gif = null;
 let captureFrames = 0;
 let workerBlobUrl = null;
+let targetYearIndex = 0;
 
 // --- Year data ---
 let years = [
@@ -101,26 +102,51 @@ function setup() {
   const btn = createButton('Download GIF');
   btn.position(10, heightCanvas + 10);
   btn.mousePressed(startRecording);
+
+    // initialize target index
+  targetYearIndex = yearIndex;
+
+  // Use a DOM keydown listener so arrow keys work reliably even if canvas isn't focused
+  window.addEventListener('keydown', function (e) {
+    // only respond to left/right arrows
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+
+    // prevent page scrolling when using arrows
+    e.preventDefault();
+
+    // do nothing if already transitioning
+    if (transitioning) return;
+
+    // step = 5 if Ctrl (Windows/Linux) or Cmd (Mac) is held, else 1
+    const step = (e.ctrlKey || e.metaKey) ? 5 : 1;
+
+    if (e.key === 'ArrowRight') {
+      targetYearIndex = (yearIndex + step) % years.length;
+    } else { // ArrowLeft
+      targetYearIndex = (yearIndex - step + years.length) % years.length;
+    }
+
+    transitioning = true;
+    transitionProgress = 0;
+  });
+
 }
 
 function draw() {
   background(10, 25, 50);
 
-  // --- handle transition progress ---
+  // --- handle transition progress toward targetYearIndex ---
   if (transitioning) {
-    transitionProgress += 0.02; // speed of transition
-if (transitionProgress >= 1) {
-  transitionProgress = 0;
-  transitioning = false;
-
-  yearIndex += transitionDirection;
-  if (yearIndex < 0) yearIndex = years.length - 1;
-  if (yearIndex >= years.length) yearIndex = 0;
-}
+    transitionProgress += 0.05; // adjust speed as desired
+    if (transitionProgress >= 1) {
+      transitionProgress = 0;
+      transitioning = false;
+      yearIndex = targetYearIndex; // finalize to target
+    }
   }
 
-  // Determine interpolation between current and next year
-  let nextYearIndex = (yearIndex + 1) % years.length;
+  // Use targetYearIndex for interpolation so jumps >1 year work
+  let nextYearIndex = targetYearIndex;
   let minExtent = 3.5;
   let maxExtent = 7.5;
   let extentCurr = map(years[yearIndex].extent, minExtent, maxExtent, 0.2, 1);
@@ -174,21 +200,6 @@ for (let i = 0; i < polygons.length; i++) {
   // --- record frames if recording ---
   if (recording) {
     captureIfRecording();
-  }
-}
-
-// --- Click to advance year ---
-function keyPressed() {
-  if (!transitioning) {
-    if (keyCode === RIGHT_ARROW) {
-      transitioning = true;
-      transitionDirection = 1; // move forward
-      transitionProgress = 0;
-    } else if (keyCode === LEFT_ARROW) {
-      transitioning = true;
-      transitionDirection = -1; // move backward
-      transitionProgress = 0;
-    }
   }
 }
 
