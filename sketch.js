@@ -4,13 +4,13 @@ const CANVAS_W = 550;
 const CANVAS_H = 600;
 
 // Global vars
-let points = [];
-let delaunay;
-let voronoi;
-let polygons = [];
+var points = [];
+var delaunay;
+var voronoi;
+var polygons = [];
 
-let widthCanvas = CANVAS_W;
-let heightCanvas = CANVAS_H;
+var widthCanvas = CANVAS_W;
+var heightCanvas = CANVAS_H;
 
 // --- Year data ---
 let years = [
@@ -62,20 +62,28 @@ let years = [
   { year: 2024, extent: 4.351 },
 ];
 
-let yearIndex = 0;
-let transitioning = false;
-let transitionProgress = 0;
-let transitionDirection = 1;
-let queuedSteps = 0;
-let transitionDelay = 0;
+var yearIndex = 0;
+var transitioning = false;
+var transitionProgress = 0;
+var transitionDirection = 1;
+var queuedSteps = 0;
+var transitionDelay = 0;
+var prevBtnElement;  
+var prev5BtnElement;
 
 function setup() {
   // 💡 FIX: Create the canvas and immediately assign its parent to 
   // the wrapper element defined in your HTML.
   let p5Canvas = createCanvas(widthCanvas, heightCanvas);
-  p5Canvas.parent('main-viz-wrapper'); 
+  p5Canvas.parent('canvas-wrapper');
 
   noStroke();
+
+  // --- ADD THESE LINES ---
+  prevBtnElement = select('#prev-year');
+  prev5BtnElement = select('#prev-5-year');
+  updateButtonVisibility(); // Call on load to hide buttons
+  // --- END ---
 
   // Generate random points
   let totalPoints = 100;
@@ -124,6 +132,7 @@ function draw() {
     if (transitionProgress >= 1) {
       transitionProgress = 0;
       yearIndex = (yearIndex + transitionDirection + years.length) % years.length;
+      updateButtonVisibility(); // <-- ADD THIS LINE
       queuedSteps--;
 
       if (queuedSteps > 0 ) {
@@ -346,4 +355,17 @@ function centroid(poly) {
     ySum += y;
   }
   return [xSum / poly.length, ySum / poly.length];
+}
+
+// --- ADD THIS ENTIRE FUNCTION ---
+function updateButtonVisibility() {
+  // Use p5.js .style() to show/hide
+  if (prevBtnElement) {
+    // Show button if yearIndex is 1 or more
+    prevBtnElement.style('display', (yearIndex > 0) ? '' : 'none');
+  }
+  if (prev5BtnElement) {
+    // Show button if yearIndex is 5 or more
+    prev5BtnElement.style('display', (yearIndex >= 5) ? '' : 'none');
+  }
 }

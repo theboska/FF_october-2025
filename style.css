@@ -1,58 +1,112 @@
+/* --- Basic Setup --- */
+* {
+    box-sizing: border-box;
+}
+
 body {
-  background: linear-gradient(180deg, #050F32 0%, #050F32 100%);
-  font-family: 'Poppins', sans-serif;
-  color: #f0f6ff;
-  text-align: center;
-  margin: 0;
-  padding: 0;
+    margin: 0;
+    padding: 10px;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: #051032; /* Match sketch background */
+    color: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
 }
 
-.container {
-  margin-top: 40px;
+/* --- 1. Explanation --- */
+#explanation {
+    width: 100%;
+    max-width: 550px; /* Match canvas width */
+    margin: 10px 0;
+    text-align: center;
+    font-size: 0.9rem;
+    line-height: 1.5;
 }
 
-h1 {
-  font-size: 1.8em;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  margin-bottom: 10px;
-  font-family: 'Poppins', sans-serif;
+#explanation h2 {
+    margin: 0 0 10px 0;
+    color: #fff;
 }
 
-button, p, div {
-    font-family: 'Poppins', sans-serif !important;
+#explanation p {
+    margin: 5px 0;
+    color: #c0c8e0;
 }
 
-#canvas-container {
-  display: flex;
-  justify-content: center;
+/* --- 2. Canvas Wrapper (for responsiveness) --- */
+#canvas-wrapper {
+    width: 100%;
+    max-width: 550px; /* Max width from your sketch */
+    margin: 0 auto;
+    border: 1px solid #1a295c;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
-/* You might need to target the p5 elements specifically */
-.p5js-wrapper button, 
-.p5js-wrapper p {
-    font-family: 'Poppins', sans-serif;
+/* This targets the canvas p5.js creates */
+#canvas-wrapper > canvas {
+    display: block;
+    width: 100% !important;
+    height: auto !important; /* Maintain aspect ratio */
 }
 
+/* --- 3. Tooltip --- */
 .tooltip {
-  font-size: 0.9em;
-  color: #a8c4e6;
-  margin-top: 10px;
-  opacity: 0.8;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #fff;
+    text-align: center;
+    margin: 15px 0 20px 0;
+    padding: 8px 15px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    min-height: 1.5em; /* Prevent layout shift while loading */
 }
 
-#download-btn {
-  margin-top: 15px;
-  background: #1c6dd0;
-  color: white;
-  border: none;
-  padding: 10px 18px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 0.9em;
-  transition: background 0.2s ease;
+/* --- Mobile Controls --- */
+#mobile-controls {
+    display: none; /* Hidden by default */
+    width: 100%;
+    max-width: 550px;
+    margin: 15px auto 0;
+    justify-content: space-between;
 }
 
-#download-btn:hover {
-  background: #2b8ef2;
+#mobile-controls button {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.9rem; /* Slightly smaller to fit */
+    font-weight: 600;
+    flex: 1 1 23%; /* Allow buttons to grow/shrink, aiming for ~23% width */
+    margin: 0 1%; /* Add small margin */
+    padding: 12px 5px; /* Adjust padding */
+    background-color: #1a295c;
+    color: white;
+    border: 1px solid #3c509e;
+    border-radius: 8px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+#mobile-controls button:active {
+    background-color: #3c509e;
+}
+
+/* --- Media Query for Touch Devices --- */
+/* Show controls on devices that have a coarse pointer (like a finger) 
+   and don't support hover (a good proxy for touch-only) */
+@media (hover: none) and (pointer: coarse) {
+    #mobile-controls {
+        display: flex;
+    }
+    
+    /* Hide keyboard instructions on mobile */
+    #explanation p:last-child {
+        display: none;
+    }
+
+    .tooltip {
+        display: none;
+    }
 }
