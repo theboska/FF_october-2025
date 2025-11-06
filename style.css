@@ -162,7 +162,7 @@ footer a:hover {
 /* --- Desktop Layout Adjustments --- */
 @media (min-width: 600px) {
     #explanation {
-        max-width: 800px; /* Make text box wider than canvas */
+        max-width: 950px; /* Make text box wider than canvas */
     }
 
     #explanation h2 {
